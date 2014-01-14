@@ -1,8 +1,19 @@
 package com.example.wheelysimple;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.example.wheelysimple.dummy.DummyContent.DummyItem;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
+
 
 /**
  * An activity representing a list of Items. This activity has different
@@ -27,12 +38,25 @@ public class ItemListActivity extends FragmentActivity implements
 	 * device.
 	 */
 	private boolean mTwoPane;
-
+	
+	public ArrayList<DummyItem> items = new ArrayList<DummyItem>();
+	public Map<String, DummyItem> itemsMap = new HashMap<String, DummyItem>();
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_item_list);
 
+		DummyItem a1=new DummyItem("1","+1","...");
+		items.add(a1);
+		itemsMap.put(a1.id, a1);
+		DummyItem a2=new DummyItem("2","+2","...");
+		items.add(a2);
+		itemsMap.put(a2.id, a2);
+		DummyItem a3=new DummyItem("3","+3","...");
+		items.add(a3);
+		itemsMap.put(a3.id, a3);
+		
 		if (findViewById(R.id.item_detail_container) != null) {
 			// The detail container view will be present only in the
 			// large-screen layouts (res/values-large and
@@ -74,4 +98,29 @@ public class ItemListActivity extends FragmentActivity implements
 			startActivity(detailIntent);
 		}
 	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    // Inflate the menu items for use in the action bar
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.menu, menu);
+	    return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	  public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {
+	    case R.id.action_refresh:
+	      Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT)
+	          .show();
+	      
+	      break;
+
+	    default:
+	      break;
+	    }
+
+	    return true;
+	  } 
+
 }

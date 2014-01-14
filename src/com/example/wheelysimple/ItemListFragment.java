@@ -69,8 +69,11 @@ public class ItemListFragment extends ListFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		ItemListActivity a=(ItemListActivity) getActivity();
+        MySimpleArrayAdapter adapter = new MySimpleArrayAdapter(getActivity(), a.items);
 
-        MySimpleArrayAdapter adapter = new MySimpleArrayAdapter(getActivity(), DummyContent.ITEMS);
+        //MySimpleArrayAdapter adapter = new MySimpleArrayAdapter(getActivity(), DummyContent.ITEMS);
         setListAdapter(adapter);        
 	}
 
@@ -114,7 +117,8 @@ public class ItemListFragment extends ListFragment {
 
 		// Notify the active callbacks interface (the activity, if the
 		// fragment is attached to one) that an item has been selected.
-		mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+		ItemListActivity a=(ItemListActivity) getActivity();
+		mCallbacks.onItemSelected(a.items.get(position).id);
 	}
 
 	@Override
