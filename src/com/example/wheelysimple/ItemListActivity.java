@@ -72,6 +72,8 @@ public class ItemListActivity extends FragmentActivity implements
 	
 	public Handler mHandler = new Handler();
 	
+	DummyContent tempData;
+	
 	// Обновляем данные каждую минуту
 	final int TIMER_INTERVAL=60*1000;
 	
@@ -198,9 +200,8 @@ public class ItemListActivity extends FragmentActivity implements
 
 				    	DummyItem c=new DummyItem(e.getString("id"),e.getString("title"),e.getString("text"));
 				    	DummyContent.addItem(c);
-				    	items.add(c);       
-						itemsMap.put(c.id, c);
 				    }
+					refreshList();
 				   				   
 				} catch (Exception ex) {			
 					ex.printStackTrace();
@@ -242,9 +243,8 @@ public class ItemListActivity extends FragmentActivity implements
        public void run()
        {
 	    	Log.v("TAXI","Items2:"+DummyContent.ITEMS.size());
-	    	ItemListFragment t=(ItemListFragment)getSupportFragmentManager().findFragmentById(R.id.item_list);
-	    	ArrayAdapter a=(ArrayAdapter) t.getListAdapter();
-	    	a.notifyDataSetChanged();
+            // Update your adapter. UI/concurency issue
+            refreshList();
 	        mProgress.setVisibility(View.GONE);
 
 	    }
@@ -262,5 +262,20 @@ public class ItemListActivity extends FragmentActivity implements
     public void onPause() {
         super.onPause();
         timer.cancel();
+    }
+
+    void refreshList()
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                DummyContent.update();
+    	    	ItemListFragment t=(ItemListFragment)getSupportFragmentManager().findFragmentById(R.id.item_list);
+    	    	ArrayAdapter a=(ArrayAdapter) t.getListAdapter();
+    	    	a.notifyDataSetChanged();
+            }
+        });
     }
 }

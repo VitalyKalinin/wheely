@@ -17,11 +17,13 @@ public class DummyContent {
 	 * An array of sample (dummy) items.
 	 */
 	public static ArrayList<DummyItem> ITEMS = new ArrayList<DummyItem>();
+	public static ArrayList<DummyItem> ITEMS_TEMP = new ArrayList<DummyItem>();
 
 	/**
 	 * A map of sample (dummy) items, by ID.
 	 */
 	public static Map<String, DummyItem> ITEM_MAP = new HashMap<String, DummyItem>();
+	public static Map<String, DummyItem> ITEM_MAP_TEMP = new HashMap<String, DummyItem>();
 
 	static {
 		// Add 3 sample items.
@@ -31,15 +33,25 @@ public class DummyContent {
 	}
 
 	public static void addItem(DummyItem item) {
-		ITEMS.add(item);
-		ITEM_MAP.put(item.id, item);
+		ITEMS_TEMP.add(item);
+		ITEM_MAP_TEMP.put(item.id, item);
 	}
 
 	public static void clear() {
 		ITEMS.clear();
 		ITEM_MAP.clear();
+		ITEMS_TEMP.clear();
+		ITEM_MAP_TEMP.clear();
 	}
 
+	public static void update()
+	{
+		ITEMS.clear();
+		ITEM_MAP.clear();
+		ITEMS.addAll(ITEMS_TEMP);
+		ITEM_MAP.putAll(ITEM_MAP_TEMP);
+	}
+	
 	/**
 	 * A dummy item representing a piece of content.
 	 */
