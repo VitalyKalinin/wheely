@@ -46,6 +46,7 @@ public class ItemDetailFragment extends Fragment {
 
 			//mItem = DummyContent.ITEM_MAP.get(getArguments().getString(
 				//	ARG_ITEM_ID));
+			Log.v("TAXI","Create MAP!");
 			mItem = a.itemsMap.get(getArguments().getString(
 				ARG_ITEM_ID));
 

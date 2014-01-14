@@ -1,17 +1,37 @@
 package com.example.wheelysimple;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import com.example.wheelysimple.dummy.DummyContent;
 import com.example.wheelysimple.dummy.DummyContent.DummyItem;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 
@@ -41,6 +61,7 @@ public class ItemListActivity extends FragmentActivity implements
 	
 	public ArrayList<DummyItem> items = new ArrayList<DummyItem>();
 	public Map<String, DummyItem> itemsMap = new HashMap<String, DummyItem>();
+	String lastID=new String();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +110,7 @@ public class ItemListActivity extends FragmentActivity implements
 			fragment.setArguments(arguments);
 			getSupportFragmentManager().beginTransaction()
 					.replace(R.id.item_detail_container, fragment).commit();
+			lastID=id;
 
 		} else {
 			// In single-pane mode, simply start the detail activity
@@ -114,6 +136,10 @@ public class ItemListActivity extends FragmentActivity implements
 	      Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT)
 	          .show();
 	      
+	      LongAndComplicatedTask longTask = new LongAndComplicatedTask(); // Создаем экземпляр
+	      longTask.execute(); // запускаем */
+
+	      
 	      break;
 
 	    default:
@@ -122,5 +148,90 @@ public class ItemListActivity extends FragmentActivity implements
 
 	    return true;
 	  } 
+
+
+	public void updateData()
+	{
+		//mProgress.setMessage("Finalizing ...");
+	    Log.v("TAXI","UpdateData");
+	    //ArrayList<DummyItem> dummyList=new ArrayList();
+		try{			
+					URL url = new URL("http://crazy-dev.wheely.com/");
+					HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+					urlConnection.setRequestMethod("GET");
+					urlConnection.setDoInput(true);
+					urlConnection.setDoOutput(false);
+					urlConnection.connect();
+				    InputStreamReader in = new InputStreamReader((InputStream) urlConnection.getContent());
+				    String line="";
+				    BufferedReader buff = new BufferedReader(in);
+				    StringBuilder buffer = new StringBuilder();
+				    while ((line = buff.readLine()) != null) {
+				            buffer.append(line);
+				    }				    
+				    String data=buffer.toString();
+				    Log.v("TAXI","data="+data);
+
+				    JSONArray json = new JSONArray(data);
+				    items.clear();
+				    itemsMap.clear();
+				    for(int i=0;i<json.length();i++)
+				    {                        
+				    	HashMap<String, String> map = new HashMap<String, String>();    
+				    	JSONObject e = json.getJSONObject(i);
+
+				    	DummyItem c=new DummyItem(e.getString("id"),e.getString("title"),e.getString("text"));
+				    	items.add(c);       
+						itemsMap.put(c.id, c);
+				    }
+				    /*ArrayList<Integer> likeList=new ArrayList();
+
+                    // looping through All Contacts
+                    for (int i = 0; i < photos.length(); i++) {
+                        JSONObject c = photos.getJSONObject(i);
+                        JSONObject images = c.getJSONObject("images");
+                        JSONObject low = images.getJSONObject("low_resolution");
+                        String urlbig = low.getString("url");
+                        JSONObject likes = c.getJSONObject("likes");
+                        int likes2 = likes.getInt("count");
+                        Photo photo=new Photo();
+                        photo.url=urlbig;
+                        photo.likes=likes2;
+                        photoList.add(photo);
+                    }
+                    //Log.v(TAG,"Result:"+likeList);*/
+                        
+				} catch (Exception ex) {			
+					ex.printStackTrace();
+					Log.v("TAXI",ex.getClass().getName());
+				}
+        //return dummyList;
+	}
+
+
+	class LongAndComplicatedTask extends AsyncTask<Void, Void, String> {
+	    
+	    @Override
+	    protected String doInBackground(Void... noargs) {
+			updateData();
+	        return "";
+	    }
+
+	    @Override
+	    protected void onPostExecute(String result) 
+	    {
+	    	Log.v("TAXI","Items:"+items.size());
+	    	ItemListFragment t=(ItemListFragment)getSupportFragmentManager().findFragmentById(R.id.item_list);
+	    	ArrayAdapter a=(ArrayAdapter) t.getListAdapter();//).notifyDataSetChanged();
+	    	a.notifyDataSetChanged();
+	    	
+			Bundle arguments = new Bundle();
+			arguments.putString(ItemDetailFragment.ARG_ITEM_ID, lastID);
+			ItemDetailFragment fragment = new ItemDetailFragment();
+			fragment.setArguments(arguments);
+			getSupportFragmentManager().beginTransaction()
+					.replace(R.id.item_detail_container, fragment).commit();
+	    }
+	}
 
 }
