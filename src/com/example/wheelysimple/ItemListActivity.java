@@ -20,6 +20,7 @@ import org.json.JSONTokener;
 import com.example.wheelysimple.dummy.DummyContent;
 import com.example.wheelysimple.dummy.DummyContent.DummyItem;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -31,7 +32,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 
@@ -59,8 +63,10 @@ public class ItemListActivity extends FragmentActivity implements
 	 */
 	private boolean mTwoPane;
 	
-	public ArrayList<DummyItem> items = new ArrayList<DummyItem>();
-	public Map<String, DummyItem> itemsMap = new HashMap<String, DummyItem>();
+	private ProgressBar mProgress;
+	
+	//public ArrayList<DummyItem> items = new ArrayList<DummyItem>();
+	//public Map<String, DummyItem> itemsMap = new HashMap<String, DummyItem>();
 	String lastID=new String();
 	
 	@Override
@@ -68,7 +74,8 @@ public class ItemListActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_item_list);
 
-		DummyItem a1=new DummyItem("1","+1","...");
+		mProgress=(ProgressBar) findViewById(R.id.progress);
+		/*DummyItem a1=new DummyItem("1","+1","...");
 		items.add(a1);
 		itemsMap.put(a1.id, a1);
 		DummyItem a2=new DummyItem("2","+2","...");
@@ -76,7 +83,7 @@ public class ItemListActivity extends FragmentActivity implements
 		itemsMap.put(a2.id, a2);
 		DummyItem a3=new DummyItem("3","+3","...");
 		items.add(a3);
-		itemsMap.put(a3.id, a3);
+		itemsMap.put(a3.id, a3);*/
 		
 		if (findViewById(R.id.item_detail_container) != null) {
 			// The detail container view will be present only in the
@@ -152,7 +159,6 @@ public class ItemListActivity extends FragmentActivity implements
 
 	public void updateData()
 	{
-		//mProgress.setMessage("Finalizing ...");
 	    Log.v("TAXI","UpdateData");
 	    //ArrayList<DummyItem> dummyList=new ArrayList();
 		try{			
@@ -173,39 +179,28 @@ public class ItemListActivity extends FragmentActivity implements
 				    Log.v("TAXI","data="+data);
 
 				    JSONArray json = new JSONArray(data);
-				    items.clear();
-				    itemsMap.clear();
-				    for(int i=0;i<json.length();i++)
+				    ArrayList<DummyItem> items=new ArrayList();
+					Map<String, DummyItem> itemsMap = new HashMap<String, DummyItem>();
+
+					DummyContent.clear();
+					for(int i=0;i<json.length();i++)
 				    {                        
 				    	HashMap<String, String> map = new HashMap<String, String>();    
 				    	JSONObject e = json.getJSONObject(i);
 
 				    	DummyItem c=new DummyItem(e.getString("id"),e.getString("title"),e.getString("text"));
+				    	DummyContent.addItem(c);
 				    	items.add(c);       
 						itemsMap.put(c.id, c);
 				    }
-				    /*ArrayList<Integer> likeList=new ArrayList();
-
-                    // looping through All Contacts
-                    for (int i = 0; i < photos.length(); i++) {
-                        JSONObject c = photos.getJSONObject(i);
-                        JSONObject images = c.getJSONObject("images");
-                        JSONObject low = images.getJSONObject("low_resolution");
-                        String urlbig = low.getString("url");
-                        JSONObject likes = c.getJSONObject("likes");
-                        int likes2 = likes.getInt("count");
-                        Photo photo=new Photo();
-                        photo.url=urlbig;
-                        photo.likes=likes2;
-                        photoList.add(photo);
-                    }
-                    //Log.v(TAG,"Result:"+likeList);*/
-                        
+				    
+				    //DummyContent.ITEMS = items;
+				    //DummyContent.ITEM_MAP = itemsMap;
+				    
 				} catch (Exception ex) {			
 					ex.printStackTrace();
 					Log.v("TAXI",ex.getClass().getName());
-				}
-        //return dummyList;
+				}		
 	}
 
 
@@ -218,19 +213,23 @@ public class ItemListActivity extends FragmentActivity implements
 	    }
 
 	    @Override
+	    protected void onPreExecute()
+	    {
+	    	//mProgress.show();
+			//mProgress.show(ItemListActivity.this, null, null, true);
+	        mProgress.setVisibility(View.VISIBLE);
+	    }
+
+	    @Override
 	    protected void onPostExecute(String result) 
 	    {
-	    	Log.v("TAXI","Items:"+items.size());
+	    	Log.v("TAXI","Items2:"+DummyContent.ITEMS.size());
 	    	ItemListFragment t=(ItemListFragment)getSupportFragmentManager().findFragmentById(R.id.item_list);
-	    	ArrayAdapter a=(ArrayAdapter) t.getListAdapter();//).notifyDataSetChanged();
+	    	ArrayAdapter a=(ArrayAdapter) t.getListAdapter();
 	    	a.notifyDataSetChanged();
 	    	
-			Bundle arguments = new Bundle();
-			arguments.putString(ItemDetailFragment.ARG_ITEM_ID, lastID);
-			ItemDetailFragment fragment = new ItemDetailFragment();
-			fragment.setArguments(arguments);
-			getSupportFragmentManager().beginTransaction()
-					.replace(R.id.item_detail_container, fragment).commit();
+	        mProgress.setVisibility(View.GONE);
+
 	    }
 	}
 

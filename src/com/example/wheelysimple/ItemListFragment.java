@@ -71,9 +71,9 @@ public class ItemListFragment extends ListFragment {
 		super.onCreate(savedInstanceState);
 		
 		ItemListActivity a=(ItemListActivity) getActivity();
-        MySimpleArrayAdapter adapter = new MySimpleArrayAdapter(getActivity(), a.items);
+        //MySimpleArrayAdapter adapter = new MySimpleArrayAdapter(getActivity(), a.items);
 
-        //MySimpleArrayAdapter adapter = new MySimpleArrayAdapter(getActivity(), DummyContent.ITEMS);
+        MySimpleArrayAdapter adapter = new MySimpleArrayAdapter(getActivity(), DummyContent.ITEMS);
         setListAdapter(adapter);        
 	}
 
@@ -118,7 +118,7 @@ public class ItemListFragment extends ListFragment {
 		// Notify the active callbacks interface (the activity, if the
 		// fragment is attached to one) that an item has been selected.
 		ItemListActivity a=(ItemListActivity) getActivity();
-		mCallbacks.onItemSelected(a.items.get(position).id);
+		mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import com.example.wheelysimple.dummy.DummyContent;
 import com.example.wheelysimple.dummy.DummyContent.DummyItem;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,8 @@ public class MySimpleArrayAdapter extends ArrayAdapter<DummyItem> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) context
+    	Log.v("TAXI","getView");
+    	LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.row_layout, parent, false);
         TextView titleView = (TextView) rowView.findViewById(R.id.title);

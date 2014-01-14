@@ -11,9 +11,12 @@
     
 <TextView
     style="?android:attr/textAppearanceLarge"
-    android:layout_width="120dp"
+    android:layout_width="90dp"
+    android:textStyle="bold"
+    
     android:layout_height="match_parent"
     android:padding="15dp"
+    android:paddingRight="2dp"
     android:text="Title"
     android:textIsSelectable="true" />
     
@@ -22,7 +25,8 @@
     style="?android:attr/textAppearanceLarge"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:paddingTop="15dp"
+    android:paddingLeft="2dp"
     android:textIsSelectable="true" />
 
 </LinearLayout>
