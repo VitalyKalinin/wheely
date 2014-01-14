@@ -84,7 +84,6 @@ public class ItemListActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_item_list);
 
-		timer = new Timer();
 		// This timer task will be executed every 1 sec.
 		TimerTask task = new TimerTask() {
 	            public void run() 
@@ -93,7 +92,7 @@ public class ItemListActivity extends FragmentActivity implements
 				      longTask.execute(); // запускаем */	                
 	            }
 		};
-		Timer timer = new Timer();
+		timer = new Timer();
 		timer.schedule(task, 0, TIMER_INTERVAL);		  
 
 	    mProgress=(ProgressBar) findViewById(R.id.progress);
@@ -260,6 +259,7 @@ public class ItemListActivity extends FragmentActivity implements
 
     @Override
     public void onPause() {
+    	Log.v("TAXI","onPause");
         super.onPause();
         timer.cancel();
     }
