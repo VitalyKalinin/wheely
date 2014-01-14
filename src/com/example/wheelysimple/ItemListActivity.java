@@ -273,8 +273,11 @@ public class ItemListActivity extends FragmentActivity implements
             {
                 DummyContent.update();
     	    	ItemListFragment t=(ItemListFragment)getSupportFragmentManager().findFragmentById(R.id.item_list);
-    	    	ArrayAdapter a=(ArrayAdapter) t.getListAdapter();
-    	    	a.notifyDataSetChanged();
+    	    	if(t!=null)
+    	    	{
+    	    		ArrayAdapter a=(ArrayAdapter) t.getListAdapter();
+    	    		a.notifyDataSetChanged();
+    	    	}
             }
         });
     }

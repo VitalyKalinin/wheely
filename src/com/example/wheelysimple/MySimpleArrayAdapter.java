@@ -33,9 +33,11 @@ public class MySimpleArrayAdapter extends ArrayAdapter<DummyItem> {
         TextView titleView = (TextView) rowView.findViewById(R.id.title);
         TextView textView = (TextView) rowView.findViewById(R.id.text);
         
-        titleView.setText(values.get(position).title);
-        textView.setText(values.get(position).text);
-        
+        if(values.size()>position)
+        {
+        	titleView.setText(values.get(position).title);
+        	textView.setText(values.get(position).text);
+        }        
         return rowView;
     }
 }
