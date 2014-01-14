@@ -12,6 +12,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,6 +29,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -65,25 +70,32 @@ public class ItemListActivity extends FragmentActivity implements
 	
 	private ProgressBar mProgress;
 	
-	//public ArrayList<DummyItem> items = new ArrayList<DummyItem>();
-	//public Map<String, DummyItem> itemsMap = new HashMap<String, DummyItem>();
-	String lastID=new String();
+	public Handler mHandler = new Handler();
 	
+	// Обновляем данные каждую минуту
+	final int TIMER_INTERVAL=60*1000;
+	
+	String lastID=new String();
+	Timer timer;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_item_list);
 
-		mProgress=(ProgressBar) findViewById(R.id.progress);
-		/*DummyItem a1=new DummyItem("1","+1","...");
-		items.add(a1);
-		itemsMap.put(a1.id, a1);
-		DummyItem a2=new DummyItem("2","+2","...");
-		items.add(a2);
-		itemsMap.put(a2.id, a2);
-		DummyItem a3=new DummyItem("3","+3","...");
-		items.add(a3);
-		itemsMap.put(a3.id, a3);*/
+		timer = new Timer();
+		// This timer task will be executed every 1 sec.
+		TimerTask task = new TimerTask() {
+	            public void run() 
+	            {
+				      LongAndComplicatedTask longTask = new LongAndComplicatedTask(); // Создаем экземпляр
+				      longTask.execute(); // запускаем */	                
+	            }
+		};
+		Timer timer = new Timer();
+		timer.schedule(task, 0, TIMER_INTERVAL);		  
+
+	    mProgress=(ProgressBar) findViewById(R.id.progress);
+
 		
 		if (findViewById(R.id.item_detail_container) != null) {
 			// The detail container view will be present only in the
@@ -140,9 +152,6 @@ public class ItemListActivity extends FragmentActivity implements
 	  public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
 	    case R.id.action_refresh:
-	      Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT)
-	          .show();
-	      
 	      LongAndComplicatedTask longTask = new LongAndComplicatedTask(); // Создаем экземпляр
 	      longTask.execute(); // запускаем */
 
@@ -160,7 +169,6 @@ public class ItemListActivity extends FragmentActivity implements
 	public void updateData()
 	{
 	    Log.v("TAXI","UpdateData");
-	    //ArrayList<DummyItem> dummyList=new ArrayList();
 		try{			
 					URL url = new URL("http://crazy-dev.wheely.com/");
 					HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -193,10 +201,7 @@ public class ItemListActivity extends FragmentActivity implements
 				    	items.add(c);       
 						itemsMap.put(c.id, c);
 				    }
-				    
-				    //DummyContent.ITEMS = items;
-				    //DummyContent.ITEM_MAP = itemsMap;
-				    
+				   				   
 				} catch (Exception ex) {			
 					ex.printStackTrace();
 					Log.v("TAXI",ex.getClass().getName());
@@ -215,22 +220,47 @@ public class ItemListActivity extends FragmentActivity implements
 	    @Override
 	    protected void onPreExecute()
 	    {
-	    	//mProgress.show();
-			//mProgress.show(ItemListActivity.this, null, null, true);
-	        mProgress.setVisibility(View.VISIBLE);
+	    	mHandler.post(beginWaiting);
 	    }
 
 	    @Override
 	    protected void onPostExecute(String result) 
 	    {
-	    	Log.v("TAXI","Items2:"+DummyContent.ITEMS.size());
+	    	/*Log.v("TAXI","Items2:"+DummyContent.ITEMS.size());
 	    	ItemListFragment t=(ItemListFragment)getSupportFragmentManager().findFragmentById(R.id.item_list);
 	    	ArrayAdapter a=(ArrayAdapter) t.getListAdapter();
-	    	a.notifyDataSetChanged();
+	    	a.notifyDataSetChanged();*/
+	    	mHandler.post(updateList);
 	    	
-	        mProgress.setVisibility(View.GONE);
+	        //mProgress.setVisibility(View.GONE);
 
 	    }
 	}
 
+	private Runnable updateList = new Runnable()
+    {
+       public void run()
+       {
+	    	Log.v("TAXI","Items2:"+DummyContent.ITEMS.size());
+	    	ItemListFragment t=(ItemListFragment)getSupportFragmentManager().findFragmentById(R.id.item_list);
+	    	ArrayAdapter a=(ArrayAdapter) t.getListAdapter();
+	    	a.notifyDataSetChanged();
+	        mProgress.setVisibility(View.GONE);
+
+	    }
+    };
+
+	private Runnable beginWaiting = new Runnable()
+    {
+       public void run()
+       {
+	        mProgress.setVisibility(View.VISIBLE);
+       }
+    };
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        timer.cancel();
+    }
 }
